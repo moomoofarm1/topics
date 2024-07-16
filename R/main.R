@@ -695,8 +695,8 @@ topicsScatterLegend <- function(
     plot <- ggplot2::ggplot(filtered_test,
                             ggplot2::aes(x = !!rlang::sym(x_column),
                                 y = !!rlang::sym(y_column))) +
-      geom_jitter(aes(color = as.factor(.data[[color_column]])), 
-                  size = 15, width = 0.05, height = 0.05, alpha = 0.7) +
+      ggplot2::geom_point(aes(color = as.factor(.data[[color_column]])), 
+                 size = 15, alpha = 0.7) +
       # ggplot2::geom_point(ggplot2::aes(color = as.factor(.data[[color_column]]))
       #                     ,size = 10, alpha = 0.5) +
       ggplot2::scale_color_manual(values = bivariate_color_codes) +
@@ -719,8 +719,8 @@ topicsScatterLegend <- function(
     
     plot <- ggplot2::ggplot(plot_only3, 
                             ggplot2::aes(x = !!rlang::sym(x_column), y = 1)) + 
-      ggplot2::geom_jitter(ggplot2::aes(color = as.factor(.data[[color_column]])), 
-                  size = 15, width = 0.05, height = 0.05, alpha = 0.7) +
+      ggplot2::geom_point(aes(color = as.factor(.data[[color_column]])), 
+                          size = 15, alpha = 0.7) +
       ggplot2::scale_color_manual(values = bivariate_color_codes[4:6]) +
       ggplot2::labs(x = label_x_name, y = "", color = '') +
       ggplot2::theme_minimal() + 
