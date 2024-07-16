@@ -706,7 +706,8 @@ topicsScatterLegend <- function(
         axis.text.x = ggplot2::element_blank(), # Remove x-axis text
         axis.text.y = ggplot2::element_blank(), # Remove y-axis text
         axis.ticks.x = ggplot2::element_blank(), # Remove x-axis ticks
-        axis.ticks.y = ggplot2::element_blank()  # Remove y-axis ticks
+        axis.ticks.y = ggplot2::element_blank(),  # Remove y-axis ticks
+        legend.position = "none"
       )
   }else if (y_axes_1 == 1){
     # TODO: Add keywords??
@@ -727,7 +728,8 @@ topicsScatterLegend <- function(
         axis.text.x = ggplot2::element_blank(), # Remove x-axis text
         axis.text.y = ggplot2::element_blank(), # Remove y-axis text
         axis.ticks.x = ggplot2::element_blank(), # Remove x-axis ticks
-        axis.ticks.y = ggplot2::element_blank()  # Remove y-axis ticks
+        axis.ticks.y = ggplot2::element_blank(),  # Remove y-axis ticks
+        legend.position = "none"
       )
   }else{
     print('Error in dim param. It should be either 1 or 2.')
