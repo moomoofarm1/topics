@@ -618,6 +618,134 @@ topicsTest <- function(model,
   return(topic_loadings_all)
 }
 
+# bivariate_color_codes = c(
+#   "#398CF9", "#60A1F7", "#5dc688",
+#   "#e07f6a", "#EAEAEA", "#40DD52",
+#   "#FF0000", "#EA7467", "#85DB8E")
+# filtered_test = test[[3]]$test
+# cor_var = test[[3]]$pred_var
+# label_x_name = grid_legend_x_axes_label
+# label_y_name = grid_legend_y_axes_label
+# save_dir = save_dir
+# figure_format = figure_format
+# seed = seed
+# y_axes_1 = 1
+
+#' The function to create lda wordclouds
+#' @return nothing is returned, the dot cloud legend is saved in the save_dir
+# @importFrom ggplot2 ggplot geom_point scale_color_manual labs theme_minimal themes element_blank
+#' @importFrom rlang sym !!
+#' @noRd
+topicsScatterLegend <- function(
+    bivariate_color_codes = c(
+      "#398CF9", "#60A1F7", "#5dc688",
+      "#e07f6a", "#EAEAEA", "#40DD52",
+      "#FF0000", "#EA7467", "#85DB8E"),
+    filtered_test, 
+    y_axes_1 = 2,
+    cor_var = "",
+    label_x_name = "x",
+    label_y_name = "y",
+    save_dir = "./results",
+    figure_format = "svg",
+    seed = 42
+){
+  if (y_axes_1 == 2){
+    bivariate_color_codes <- bivariate_color_codes
+    x_column <- names(filtered_test)[3]
+    y_column <- names(filtered_test)[7]
+    color_column <- names(filtered_test)[11]
+    if (FALSE){
+      # Add labels
+      # filtered_test <- filtered_test %>%
+      #   dplyr::mutate(first_word = stringr::str_extract(top_terms, "^[^,]*"))
+      # plot <- ggplot(filtered_test, ggplot2::aes(x = !!rlang::sym(x_column), y = !!rlang::sym(y_column), label = first_word)) +
+      #   geom_point(ggplot2::aes(color = as.factor(.data[[color_column]]))) +
+      #   geom_text(hjust = 1.5, vjust = 1.5) + # Adjust text position as needed
+      #   scale_color_manual(values = bivariate_color_codes) +
+      #   labs(x = label_x_name, y = label_y_name, color = '') +
+      #   theme_minimal() + 
+      #   theme(
+      #     axis.text.x = element_blank(), # Remove x-axis text
+      #     axis.text.y = element_blank(), # Remove y-axis text
+      #     axis.ticks.x = element_blank(), # Remove x-axis ticks
+      #     axis.ticks.y = element_blank()  # Remove y-axis ticks
+      #   )
+      # Add no of topic
+      # filtered_test <- filtered_test %>%
+      #   dplyr::mutate(topic_number = as.numeric(sub("t_", "", topic)))
+      # plot <- ggplot(filtered_test, aes(x = !!rlang::sym(x_column), y = !!rlang::sym(y_column))) +
+      #   geom_point(aes(color = as.factor(.data[[color_column]])), size = 15, alpha = 0.3) +  # Larger points without jitter
+      #   #geom_text(aes(label = topic_number), vjust = 0.5, hjust = 0.5, color = "black", size = 15) +  # Centered text, adjust size as needed
+      #   scale_color_manual(values = bivariate_color_codes) +
+      #   labs(x = label_x_name, y = label_y_name, color = '') +
+      #   theme_minimal() +
+      #   theme(
+      #     axis.text.x = element_blank(),
+      #     axis.text.y = element_blank(),
+      #     axis.ticks.x = element_blank(),
+      #     axis.ticks.y = element_blank()
+      #   )
+    }
+    
+    # Warning message:
+    #   Use of `filtered_test[[color_column]]`
+    # is discouraged.
+    # ℹ Use `.data[[color_column]]` instead.
+    plot <- ggplot2::ggplot(filtered_test,
+                            ggplot2::aes(x = !!rlang::sym(x_column),
+                                y = !!rlang::sym(y_column))) +
+      geom_jitter(aes(color = as.factor(.data[[color_column]])), 
+                  size = 15, width = 0.05, height = 0.05, alpha = 0.7) +
+      # ggplot2::geom_point(ggplot2::aes(color = as.factor(.data[[color_column]]))
+      #                     ,size = 10, alpha = 0.5) +
+      ggplot2::scale_color_manual(values = bivariate_color_codes) +
+      ggplot2::labs(x = label_x_name, y = label_y_name, color = '') +
+      ggplot2::theme_minimal() +
+      ggplot2::theme(
+        axis.text.x = ggplot2::element_blank(), # Remove x-axis text
+        axis.text.y = ggplot2::element_blank(), # Remove y-axis text
+        axis.ticks.x = ggplot2::element_blank(), # Remove x-axis ticks
+        axis.ticks.y = ggplot2::element_blank()  # Remove y-axis ticks
+      )
+  }else if (y_axes_1 == 1){
+    # TODO: Add keywords??
+    #bivariate_color_codes <- bivariate_color_codes[4:6]
+    x_column <- names(filtered_test)[3]
+    color_column <- names(filtered_test)[11]
+    plot_only3 <- dplyr::filter(tibble::as_tibble(filtered_test,.name_repair="minimal"),
+                                color_categories == 4 | color_categories == 5 | color_categories == 6)
+    
+    plot <- ggplot2::ggplot(plot_only3, 
+                            ggplot2::aes(x = !!rlang::sym(x_column), y = 1)) + 
+      ggplot2::geom_jitter(ggplot2::aes(color = as.factor(.data[[color_column]])), 
+                  size = 15, width = 0.05, height = 0.05, alpha = 0.7) +
+      ggplot2::scale_color_manual(values = bivariate_color_codes[4:6]) +
+      ggplot2::labs(x = label_x_name, y = "", color = '') +
+      ggplot2::theme_minimal() + 
+      ggplot2::theme(
+        axis.text.x = ggplot2::element_blank(), # Remove x-axis text
+        axis.text.y = ggplot2::element_blank(), # Remove y-axis text
+        axis.ticks.x = ggplot2::element_blank(), # Remove x-axis ticks
+        axis.ticks.y = ggplot2::element_blank()  # Remove y-axis ticks
+      )
+  }else{
+    print('Error in dim param. It should be either 1 or 2.')
+    return (NULL)
+  }
+  
+  ggplot2::ggsave(paste0(save_dir,"/seed_", seed, 
+                         "/wordclouds/",
+                         "dot_legend_",
+                         "corvar_", cor_var,
+                         ".",
+                         figure_format),
+                  plot = plot, 
+                  width = 10, 
+                  height = 8, 
+                  units = "in")   
+}
+
 
 # bivariate_color_codes = bivariate_color_codes
 # cor_var = tests[[3]]$pred_var
@@ -643,20 +771,25 @@ topicsTest <- function(model,
 #' Creates the legend for the plot.
 #' @return A legend plot saved that can be combined with the plot object.
 #' @noRd
-topicLegend <- function(bivariate_color_codes = bivariate_color_codes,
-                        cor_var = "",
-                        save_dir = "./results",
-                        figure_format = 'svg',
-                        seed = 42,
-                        y_axes_1 = 2,
-                        legend_title,
-                        legend_title_size,
-                        titles_color,
-                        legend_x_axes_label,
-                        legend_y_axes_label,
-                        topic_data_all,
-                        legend_number_color,
-                        legend_number_size
+topicsGridLegend <- function(
+    bivariate_color_codes = c(
+      "#398CF9", "#60A1F7", "#5dc688",
+      "#e07f6a", "#EAEAEA", "#40DD52",
+      "#FF0000", "#EA7467", "#85DB8E"),
+    filtered_test,
+    cor_var = "",
+    save_dir = "./results",
+    figure_format = 'svg',
+    seed = 42,
+    y_axes_1 = 2,
+    legend_title,
+    legend_title_size,
+    titles_color,
+    legend_x_axes_label,
+    legend_y_axes_label,
+    topic_data_all,
+    legend_number_color,
+    legend_number_size
 ) {
   if (y_axes_1 == 2){y_axes_1 <- ""}else{y_axes_1 <- "only_x_dimension"}
   legCor <- bivariate_color_codes
@@ -873,10 +1006,8 @@ topicsPlot1 <- function(model,
   
 }
 
-
-
 # source('./R/wordclouds.R')
-# grid_pos = 5
+# grid_pos = 1
 # model = model
 # test = topic_loadings_all
 # grid_plot = TRUE
@@ -888,6 +1019,8 @@ topicsPlot1 <- function(model,
 # save_dir = "./results"
 # figure_format = "png"
 # seed = 42
+# grid_legend_x_axes_label = "legend_x_axes_label"
+# grid_legend_y_axes_label = "legend_y_axes_label"
 
 
 #' The function to create lda wordclouds
@@ -1033,8 +1166,20 @@ topicsPlot <- function(model,
     }
     
     if (grid_plot){
-      topicLegend(
+      topicsScatterLegend(
         bivariate_color_codes = bivariate_color_codes,
+        filtered_test = test[[3]]$test,
+        y_axes_1 = dim,
+        cor_var = test[[3]]$pred_var,
+        label_x_name = grid_legend_x_axes_label,
+        label_y_name = grid_legend_y_axes_label,
+        save_dir = save_dir,
+        figure_format = figure_format,
+        seed = seed
+      )
+      topicsGridLegend(
+        bivariate_color_codes = bivariate_color_codes,
+        filtered_test = test[[3]]$test,
         cor_var = test[[3]]$pred_var,
         save_dir = save_dir,
         figure_format = figure_format,
@@ -1049,7 +1194,7 @@ topicsPlot <- function(model,
         legend_number_color = grid_legend_number_color,
         legend_number_size = grid_legend_number_size
       )
-      print('The grid plot legend is saved under the same folder.')
+      print('The grid plot legends is saved under the same folder.')
     }
   }
 }
