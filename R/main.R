@@ -1088,11 +1088,9 @@ topicsPlot <- function(model,
   
   if (dim == 1 && grid_plot){
     print('Dim is set to 1 to plot pred_var_x. This needs pred_var_x in topicsTest.')
-    if (color_scheme == 'default'){bivariate_color_codes <-  bivariate_color_codes[4:6]}else{
-      if (length(bivariate_color_codes) != 3){
-        print('Please input 3 color codes for the paramter color_scheme!')
-        return (NULL)
-      }
+    if (length(bivariate_color_codes) != 3){
+      print('Please input 9 color codes for the paramter color_scheme!')
+      return (NULL)
     }
   }else if(dim == 2 && grid_plot){
     if (length(bivariate_color_codes) != 9){
