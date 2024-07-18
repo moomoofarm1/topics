@@ -1063,7 +1063,7 @@ topicsPlot <- function(model,
                              grid_legend_number_size = 5
                              ){
   
-  if (is.character(color_scheme) && length(color_scheme) == 1 && color_scheme == "default"){
+  if (is.character(color_scheme) && length(color_scheme) == 1){
     if (color_scheme == 'default'){
       if (dim == 2){
         bivariate_color_codes <- c(
