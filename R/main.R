@@ -539,9 +539,9 @@ topicsTest <- function(model,
                        load_dir=NULL,
                        save_dir="./results"){
   
-  if (!is.null(pred_var_y)){
-    control_vars <- c() # not supported yet
-  }
+  #if (!is.null(pred_var_y)){
+  #  control_vars <- c() # not supported yet
+  #}
   if (is.null(pred_var_x)){
     print('Please input the pred_var_x!')
     return (NULL)
