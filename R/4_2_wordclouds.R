@@ -428,8 +428,11 @@ create_plots <- function(
                                                size = phi, 
                                                color = color)) + #,x=estimate)) +
             ggwordcloud::geom_text_wordcloud() +
-            ggplot2::scale_size_area(max_size = max_size) +
-            ggplot2::scale_colour_identity() + 
+            ggplot2::scale_size_area(max_size = max_size)
+          if (!is.null(highlight_topic_words) && is.vector(highlight_topic_words)){
+            plot <- plot + ggplot2::scale_colour_identity()
+          }
+          plot <- plot + 
             ggplot2::theme_minimal() +
             #theme(plot.margin = margin(0,0,0,0, "cm")) +
             #color_scheme + 
