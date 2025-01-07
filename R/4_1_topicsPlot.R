@@ -379,9 +379,11 @@ generate_scatter_plot <- function(
   }
   
   # 3. Set symmetrical x/y-axis limits AND explicit breaks
-  plot <- plot + ggplot2::scale_x_continuous(limits = c(-max_abs_x, max_abs_x), breaks = breaks_x)
+  plot <- plot + ggplot2::scale_x_continuous(limits = c(-max_abs_x, max_abs_x), breaks = breaks_x,
+                                             labels = function(x) sprintf("%.3f", x))
   if (!is.null(y_col)){
-      plot <- plot + ggplot2::scale_y_continuous(limits = c(-max_abs_y, max_abs_y), breaks = breaks_y)
+      plot <- plot + ggplot2::scale_y_continuous(limits = c(-max_abs_y, max_abs_y), breaks = breaks_y,
+                                                 labels = function(x) sprintf("%.3f", x))
   }
   
   if (is.null(y_col)){
