@@ -1280,7 +1280,7 @@ topicsPlot <- function(
       color_negative_cor = ggplot2::scale_color_gradient(
         low = bivariate_color_codes[1], high = bivariate_color_codes[2]), # grey in hex code
       color_positive_cor = ggplot2::scale_color_gradient(
-        low = bivariate_color_codes[2], high = bivariate_color_codes[3]),
+        low = bivariate_color_codes[3], high = bivariate_color_codes[4]),
       save_dir = save_dir,
       figure_format = figure_format,
       width = width, 
