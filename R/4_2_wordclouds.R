@@ -371,7 +371,7 @@ create_plots <- function(
       }
       
       #
-      if (!is.nan(p_adjusted) & p_adjusted < p_alpha){
+      if (TRUE){
         
         #estimate <- test[i,][[grep(estimate_col, colnames(test), value=TRUE)]]# $PHQtot.estimate
         #p_adjusted <- test[i,][[grep("p_adjusted", colnames(test), value=TRUE)]] # $PHQtot.p_adjustedfdr
