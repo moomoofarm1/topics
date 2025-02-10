@@ -1346,9 +1346,9 @@ topicsPlot <- function(
           test = filtered_test,
           popout = popout,
           color_negative_cor = ggplot2::scale_color_gradient(
-            low = color_b, high = color_f),
+            low = '#FFFFFF', high = color_f),
           color_positive_cor = ggplot2::scale_color_gradient(
-            low = color_b, high = color_f),
+            low = '#FFFFFF', high = color_f),
           grid_pos = i,
           scale_size = scale_size,
           plot_topics_idx = plot_topics_idx,
