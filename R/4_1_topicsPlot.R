@@ -21,8 +21,6 @@
 #' @param figure_format File format for the saved scatter plot. Examples: "svg", "png", "pdf". Default: "svg".
 #' @param scatter_popout_dot_size Size of the dots for pop-out topics in the scatter legend. Set to "prevalence" for dot size changing based on topic prevalence. Default: 15.
 #' @param scatter_bg_dot_size Size of the dots for background topics in the scatter legend. Default: 9.
-#' @param scatter_legend_dots_alpha The transparency of the dots
-#' @param scatter_legend_bg_dots_alpha The transparency of the dots
 #' @param width Width of the saved scatter plot in inches. Default: 10.
 #' @param height Height of the saved scatter plot in inches. Default: 8.
 #' @param seed Seed for reproducibility, ensuring consistent plot generation. Default: 42.
@@ -44,10 +42,8 @@ topicsScatterLegend <- function(
     label_y_name = "y", 
     save_dir, 
     figure_format = "svg",
-    scatter_popout_dot_size = c(1, 5), 
-    scatter_bg_dot_size = c(1, 5),
-    scatter_legend_dots_alpha = 0.8,
-    scatter_legend_bg_dots_alpha = 0.2, 
+    scatter_popout_dot_size = 15, 
+    scatter_bg_dot_size = 9, 
     width = 10, 
     height = 8, 
     seed = 42
@@ -99,41 +95,16 @@ topicsScatterLegend <- function(
     backgr_dots <- filtered_test %>% dplyr::anti_join(popout, by = colnames(filtered_test))
   }
  
-#  if (scatter_popout_dot_size == "prevalence"){
-  if (max(popout$prevalence) == min(popout$prevalence)) {
-    # If all prevalence values are the same, assign the midpoint size to all rows
-    popout <- popout %>%
-      dplyr::mutate(dot_size = mean(scatter_popout_dot_size))
-  } else {
-    # If prevalence varies, apply the normal scaling
-    popout <- popout %>%
-      dplyr::mutate(
-        dot_size = scatter_popout_dot_size[[1]] + 
-          (prevalence - min(prevalence)) / (max(prevalence) - min(prevalence)) * 
-          (scatter_popout_dot_size[[2]] - scatter_popout_dot_size[[1]])
-      )
-  }
-  
-  # Update scatter_popout_dot_size after mutation
-  scatter_popout_dot_size <- popout$dot_size      
-
-  if (max(backgr_dots$prevalence) == min(backgr_dots$prevalence)) {
-    # If all prevalence values are the same, assign the midpoint size to all rows
-    backgr_dots <- backgr_dots %>%
-      dplyr::mutate(bg_dot_size = mean(scatter_bg_dot_size))
-  } else {
-    # If prevalence varies, apply the normal scaling
-    backgr_dots <- backgr_dots %>%
-      dplyr::mutate(
-        bg_dot_size = scatter_bg_dot_size[[1]] + 
-          (prevalence - min(prevalence)) / (max(prevalence) - min(prevalence)) * 
-          (scatter_bg_dot_size[[2]] - scatter_bg_dot_size[[1]])
-      )
-  }
-  
-  scatter_bg_dot_size <- backgr_dots$`bg_dot_size`
+  if (scatter_popout_dot_size == "prevalence"){
+      popout <- popout %>%
+        dplyr::mutate(dot_size = 3 + (prevalence - min(prevalence)) / (max(prevalence) - min(prevalence)) * (8 - 3))
+      scatter_popout_dot_size <- popout$`dot_size`
       
-#  }else{scatter_popout_dot_size <- scatter_popout_dot_size}
+      backgr_dots <- backgr_dots %>%
+        dplyr::mutate(bg_dot_size = 2 + (prevalence - min(prevalence)) / (max(prevalence) - min(prevalence)) * (6 - 2))
+      scatter_bg_dot_size <- backgr_dots$`bg_dot_size`
+      
+  }else{scatter_popout_dot_size <- scatter_popout_dot_size}
     
   # Generate scatter plot
   plot <- generate_scatter_plot(
@@ -147,8 +118,6 @@ topicsScatterLegend <- function(
     color_col = color_column, 
     popout_size = scatter_popout_dot_size, 
     bg_size = scatter_bg_dot_size, 
-    scatter_legend_dots_alpha = scatter_legend_dots_alpha,
-    scatter_legend_bg_dots_alpha = scatter_legend_bg_dots_alpha,
     allow_topic_num_legend = allow_topic_num_legend, 
     scatter_show_axis_values = scatter_show_axis_values
   )
@@ -316,8 +285,6 @@ determine_popout_topics <- function(
 #' @param color_col A string specifying the name of the column in `popout` and `background` used to map categories to colors.
 #' @param popout_size The size of the dots for pop-out points in the scatter plot.
 #' @param bg_size The size of the dots for background points in the scatter plot.
-#' @param scatter_legend_bg_dots_alpha The transparency of the dots
-#' @param scatter_legend_dots_alpha The transparency of the dots
 #' @param allow_topic_num_legend Logical; if TRUE, adds topic numbers as text labels to the pop-out points. Default: FALSE.
 #' @param scatter_show_axis_values Show the values on the axises. 
 #' @noRd
@@ -332,8 +299,6 @@ generate_scatter_plot <- function(
     color_col, 
     popout_size, 
     bg_size, 
-    scatter_legend_dots_alpha = 0.8, 
-    scatter_legend_bg_dots_alpha = 0.2,
     allow_topic_num_legend, 
     scatter_show_axis_values
 ) {
@@ -387,7 +352,7 @@ generate_scatter_plot <- function(
   # Add background points only if background is not empty
   if (nrow(background) > 0) {
     plot <- plot +
-      ggplot2::geom_point(data = background, bg_aes, size = bg_size, alpha = scatter_legend_bg_dots_alpha)
+      ggplot2::geom_point(data = background, bg_aes, size = bg_size, alpha = 0.2)
   }
   
   # Add popout points
@@ -395,7 +360,7 @@ generate_scatter_plot <- function(
     ggplot2::geom_point(data = popout, 
                         popout_aes, 
                         size = popout_size, 
-                        alpha = scatter_legend_dots_alpha) +
+                        alpha = 0.8) +
     ggplot2::scale_color_manual(values = bivariate_color_codes) +
     ggplot2::labs(x = label_x_name, y = label_y_name, color = '') +
     ggplot2::theme_minimal() +
@@ -699,8 +664,6 @@ topicsGridLegend <- function(
 #' @param color_positive_cor (R_obj) The color gradient for positive correlations
 #' @param grid_pos (numeric) The position for grid topics
 #' @param scale_size (logical) Whether to scale the size of the words
-#' @param scatter_legend_dots_alpha The transparency of the dots
-#' @param scatter_legend_bg_dots_alpha The transparency of the dots
 #' @param plot_topics_idx (vector) The topics to plot determined by index
 #' @param p_alpha (integer) The p-value threshold to use for significance
 #' @param highlight_topic_words (named vector) The dictionary to popout negative words to an individual plot for easier reading. 
@@ -723,8 +686,6 @@ topicsPlot1 <- function(
     color_positive_cor = NULL,
     grid_pos = "",
     scale_size = FALSE,
-    scatter_legend_dots_alpha, 
-    scatter_legend_bg_dots_alpha, 
     plot_topics_idx = NULL,
     p_alpha = 0.05,
     highlight_topic_words = c(not = "#2d00ff", never = "#2d00ff"),    
@@ -1060,8 +1021,6 @@ clean_characters_for_plotting_test <- function(test) {
 #' @param scatter_legend_bg_dot_size (integer) The size of background dots in the scatter legend.
 #' @param scatter_legend_n (numeric or vector) A vector determining the number of dots to emphasize in each quadrant of the scatter legend.
 #' For example: c(1,1,1,1,0,1,1,1,1) result in one dot in each quadrant except for the middle quadrant. 
-#' @param scatter_legend_dots_alpha (numeric) The transparency alphe level of the dots.
-#' @param scatter_legend_bg_dots_alpha (numeric) The transparency alphe level of the background dots.
 #' @param scatter_legend_method (string) The method to filter topics to be emphasized in the scatter legend; either "mean", "max_x", or "max_y".
 #' @param scatter_legend_specified_topics (vector) Specify which topic(s) to emphasize in the scatter legend. 
 #' For example, c("t_1", "t_2"). If set, scatter_legend_method will have no effect.
@@ -1102,10 +1061,8 @@ topicsPlot <- function(
     height = 5,
     max_size = 10,
     seed = 42,
-    scatter_legend_dot_size = c(3,8),
-    scatter_legend_bg_dot_size = c(1,3),
-    scatter_legend_dots_alpha = 0.8, 
-    scatter_legend_bg_dots_alpha = 0.2,
+    scatter_legend_dot_size = 15,
+    scatter_legend_bg_dot_size = 9,
     scatter_legend_n = c(1,1,1,1,0,1,1,1,1),
     scatter_legend_method = c("mean"),
     scatter_legend_specified_topics = NULL,
@@ -1374,8 +1331,6 @@ topicsPlot <- function(
       allow_topic_num_legend = scatter_legend_topic_n,
       scatter_popout_dot_size = scatter_legend_dot_size,
       scatter_bg_dot_size = scatter_legend_bg_dot_size,
-      scatter_legend_dots_alpha = scatter_legend_dots_alpha, 
-      scatter_legend_bg_dots_alpha = scatter_legend_bg_dots_alpha,
       scatter_show_axis_values = scatter_show_axis_values,
       save_dir = save_dir,
       figure_format = figure_format,
@@ -1492,5 +1447,5 @@ topicsPlot <- function(
     msg <- "The grid plot legends are saved in the save_dir."
     message(colourise(msg, "green"))
   }
-  return(plot_list)
+  return(list(plot_list, popout1))
 }
